@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Fuelwise Design System & Styles
+   Fuelwise Design System & Styles (Phase B)
    Built mobile-first with Vanilla CSS.
    Uses the Rule of Eights, Material Design breakpoints, and WCAG AA compliance.
    ========================================================================== */
@@ -12,18 +12,19 @@
   --space-3: 24px;
   --space-4: 32px;
   --space-6: 48px;
+  --space-8: 64px;
 
   /* Material Design Breakpoints Reference */
   --bp-compact: 0px;
   --bp-medium: 600px;
   --bp-expanded: 840px;
-  --max-content-width: 1040px;
+  --max-content-width: 880px;
 
   /* Touch Target Standard */
   --touch-target-min: 48px;
 
   /* Semantic Type Roles (rem based, body >= 16px) */
-  --type-display: 2rem;      /* 32px on compact */
+  --type-display: 2.25rem;   /* 36px on compact */
   --type-headline: 1.75rem;  /* 28px on compact */
   --type-title: 1.25rem;     /* 20px on compact */
   --type-body: 1rem;         /* 16px */
@@ -99,13 +100,24 @@ body {
   padding: var(--space-3) 0 var(--space-6) 0;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /* Typography Utility Classes */
 .type-headline {
   font-size: var(--type-headline);
   font-weight: 700;
   line-height: 1.25;
   color: var(--text-primary);
-  margin-bottom: var(--space-1);
 }
 
 .type-title {
@@ -113,7 +125,6 @@ body {
   font-weight: 600;
   line-height: 1.35;
   color: var(--text-primary);
-  margin-bottom: var(--space-2);
 }
 
 .type-body {
@@ -142,97 +153,25 @@ body {
   max-width: var(--max-content-width);
   margin-left: auto;
   margin-right: auto;
+  padding: 0 var(--space-2);
 }
 
 /* Header */
 .app-header {
-  padding: 0 var(--space-2) var(--space-4) var(--space-2);
+  margin-bottom: var(--space-4);
 }
 
 .header-content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 
 .header-subtitle {
-  max-width: 680px;
+  max-width: 600px;
 }
 
-.header-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  align-items: center;
-  margin-top: var(--space-1);
-}
-
-/* Buttons (at least 48px tall) */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: var(--touch-target-min);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-  text-decoration: none;
-}
-
-.btn:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.btn-outline {
-  background-color: transparent;
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.btn-outline:hover {
-  background-color: var(--accent);
-  color: var(--accent-contrast);
-}
-
-.btn-ghost {
-  background-color: transparent;
-  border-color: var(--border-color);
-  color: var(--text-secondary);
-}
-
-.btn-ghost:hover {
-  background-color: var(--bg-subtle);
-  color: var(--text-primary);
-}
-
-.example-badge {
-  display: inline-block;
-  background-color: var(--badge-bg);
-  color: var(--badge-text);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-  align-self: flex-start;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* ==========================================================================
-   Grid System & Panels (Mobile-First / Compact: 4 columns, 16px margins)
-   ========================================================================== */
-.calculator-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  column-gap: var(--space-2);
-  row-gap: var(--space-3);
-  padding: 0 var(--space-2);
-}
-
+/* Panels */
 .panel {
   background-color: var(--bg-card);
   border-radius: var(--radius-md);
@@ -241,19 +180,48 @@ body {
   border: 1px solid var(--border-color);
 }
 
-.panel-inputs {
-  grid-column: 1 / -1;
-}
-
-.panel-results {
-  grid-column: 1 / -1;
+/* ==========================================================================
+   Journey 1: Setup Flow (Guided 3-Step Wizard)
+   ========================================================================== */
+.flow-container {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
 }
 
-/* Form Controls (at least 48px tall) */
-.form-grid {
+.flow-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.step-indicator {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 8px;
+  background-color: var(--slider-track);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: var(--accent);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.flow-title {
+  color: var(--text-primary);
+}
+
+.step-pane {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -310,62 +278,202 @@ body {
   line-height: 1.4;
 }
 
-/* Results Display */
-.results-cards {
+.step-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+/* Buttons (All touch targets >= 48px) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-target-min);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.btn-outline:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover {
+  background-color: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.btn-text {
+  background: none;
+  border: none;
+  min-height: var(--touch-target-min);
+  padding: 0 var(--space-1);
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-text:hover {
+  color: var(--accent-hover);
+}
+
+.example-badge {
+  display: inline-block;
+  background-color: var(--badge-bg);
+  color: var(--badge-text);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  align-self: flex-start;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Journey 2: Result Screen ("Today")
+   Hero number is central
+   ========================================================================== */
+.results-screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Hero Card */
+.hero-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  border-left: 6px solid var(--accent);
 }
 
-.result-card {
-  background-color: var(--bg-subtle);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3);
+.hero-top {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
   gap: var(--space-1);
 }
 
-.primary-card {
-  border-left: 4px solid var(--accent);
-}
-
-.result-label {
+.hero-label {
   text-transform: uppercase;
   font-size: 0.8125rem;
   letter-spacing: 0.05em;
   color: var(--text-secondary);
 }
 
-.result-value-wrap {
+.hero-headline {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   gap: var(--space-1);
+  margin: var(--space-1) 0;
 }
 
-.secondary-cards-grid {
+.hero-prefix,
+.hero-unit {
+  color: var(--text-primary);
+}
+
+.hero-number {
+  font-size: var(--type-display);
+  color: var(--accent);
+}
+
+.hero-explanation {
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-2);
+}
+
+/* Results Grid */
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+.card-title {
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+/* Sub-results (Daily & Monthly) */
+.secondary-figures {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-2);
 }
 
-.secondary-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.result-explanation {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-top: var(--space-1);
-}
-
-/* Price Rise Slider */
-.slider-container {
+.figure-box {
   background-color: var(--bg-subtle);
   border-radius: var(--radius-sm);
-  padding: var(--space-3);
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-half);
+}
+
+.figure-label {
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.figure-value {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Slider Card */
+.slider-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -377,7 +485,7 @@ body {
   align-items: center;
 }
 
-#price-rise-percent {
+.rise-tag {
   color: var(--accent);
   font-weight: 700;
 }
@@ -434,28 +542,95 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: var(--shadow-sm);
 }
 
-.slider-result {
+.slider-result-row {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-half);
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
   padding-top: var(--space-1);
   border-top: 1px solid var(--border-color);
+  gap: var(--space-1);
 }
 
-.slider-result-text {
-  font-size: 0.875rem;
+.projected-number {
+  color: var(--accent);
+  font-size: 1.25rem;
+}
+
+/* Protect Your Rate Card */
+.rate-protection-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.card-description {
   color: var(--text-secondary);
 }
 
-.projected-value {
-  font-size: 1.375rem;
-  color: var(--accent);
+.rate-input-group {
+  margin-top: var(--space-1);
 }
 
-/* Footer & Privacy Note */
+.rate-outcomes {
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+
+.outcome-row {
+  display: flex;
+  gap: var(--space-1);
+  align-items: flex-start;
+}
+
+.outcome-bullet {
+  color: var(--accent);
+  line-height: 1.5;
+}
+
+.outcome-text {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.quote-copy-wrap {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.copy-toast {
+  background-color: var(--badge-bg);
+  color: var(--badge-text);
+  padding: var(--space-half) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+/* Footer */
 .app-footer {
-  padding: var(--space-4) var(--space-2) 0 var(--space-2);
+  margin-top: var(--space-6);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
   text-align: center;
+}
+
+.footer-actions {
+  display: flex;
+  gap: var(--space-2);
 }
 
 .privacy-note {
@@ -464,100 +639,59 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* ==========================================================================
-   Medium Screens (600px to 839px)
-   8 columns, 24px side margins, 16px gutters
-   Inputs in 2 columns, results card full width below them
+   Responsive Breakpoints (Material Design window size classes)
    ========================================================================== */
-@media (min-width: 600px) {
-  .app-header {
-    padding-left: var(--space-3);
-    padding-right: var(--space-3);
-  }
 
-  .calculator-grid {
-    grid-template-columns: repeat(8, 1fr);
-    column-gap: var(--space-2);
-    row-gap: var(--space-3);
+/* Medium Screens (600px to 839px) */
+@media (min-width: 600px) {
+  .app-layout {
     padding: 0 var(--space-3);
   }
 
-  .panel-inputs {
-    grid-column: 1 / -1;
-  }
-
-  .panel-results {
-    grid-column: 1 / -1;
-  }
-
-  .form-grid {
-    display: grid;
+  .secondary-figures {
     grid-template-columns: repeat(2, 1fr);
-    column-gap: var(--space-3);
-    row-gap: var(--space-3);
   }
 
-  .field-work-hours {
+  .results-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .rate-protection-card {
     grid-column: span 2;
   }
-
-  .secondary-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .slider-result {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
 }
 
-/* ==========================================================================
-   Expanded Screens (840px and above)
-   12 columns, 24px side margins, 24px gutters, max-width 1040px centred
-   Inputs on left (5 cols), Results on right (7 cols) sticky
-   ========================================================================== */
+/* Expanded Screens (840px and above) */
 @media (min-width: 840px) {
   :root {
-    --type-display: 3rem;     /* 48px on expanded */
-    --type-headline: 2.25rem; /* 36px */
-    --type-title: 1.5rem;     /* 24px */
+    --type-display: 3.25rem;   /* 52px on desktop */
+    --type-headline: 2.25rem;  /* 36px */
+    --type-title: 1.5rem;      /* 24px */
   }
 
-  .calculator-grid {
-    grid-template-columns: repeat(12, 1fr);
-    column-gap: var(--space-3);
-    row-gap: var(--space-3);
+  .app-layout {
     padding: 0 var(--space-3);
-    align-items: start;
   }
 
-  .panel-inputs {
-    grid-column: span 5;
+  .flow-container {
+    padding: var(--space-4);
   }
 
-  .form-grid {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+  .hero-card {
+    padding: var(--space-4);
   }
 
-  .field-work-hours {
-    grid-column: auto;
+  .results-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
   }
 
-  .panel-results {
-    grid-column: span 7;
-    position: sticky;
-    top: var(--space-3);
-  }
-
-  .app-footer {
-    padding-left: var(--space-3);
-    padding-right: var(--space-3);
+  .rate-protection-card {
+    grid-column: span 2;
   }
 }
 
-/* Reduced Motion Support */
+/* Motion Preferences */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

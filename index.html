@@ -9,26 +9,30 @@
 </head>
 <body>
   <div class="app-layout">
+    <!-- Header -->
     <header class="app-header">
       <div class="header-content">
         <h1 class="type-headline">Fuelwise</h1>
         <p class="type-body header-subtitle">A calculator for Nigerian remote workers and freelancers who run a generator. Know what power costs you per working hour so you can price your work honestly.</p>
-        <div class="header-actions">
-          <button type="button" id="example-btn" class="btn btn-outline type-label">Try an example</button>
-          <button type="button" id="clear-btn" class="btn btn-ghost type-label">Clear my numbers</button>
-        </div>
-        <p id="example-notice" class="example-badge type-body hidden" role="status">Example values, not your real numbers.</p>
       </div>
     </header>
 
-    <main class="calculator-grid">
-      <!-- Input Panel (Left on Desktop) -->
-      <section class="panel panel-inputs" aria-labelledby="inputs-heading">
-        <h2 id="inputs-heading" class="type-title">Your Generator &amp; Work Hours</h2>
+    <main class="main-content" id="main-content">
+      <!-- Journey 1: Three-Step Setup Flow -->
+      <section id="setup-flow" class="flow-container panel" aria-labelledby="flow-heading">
+        <div class="flow-progress">
+          <span id="step-indicator" class="step-indicator type-label">Step 1 of 3</span>
+          <div class="progress-bar-track" role="progressbar" id="progress-bar" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar-fill" id="progress-fill" style="width: 33.33%;"></div>
+          </div>
+        </div>
 
-        <form id="calc-form" novalidate>
-          <div class="form-grid">
-            <div class="form-group field-litres">
+        <h2 id="flow-heading" class="type-title flow-title">Your generator</h2>
+
+        <form id="setup-form" novalidate>
+          <!-- Step 1: Generator specs -->
+          <div class="step-pane" id="step-1" data-step="1">
+            <div class="form-group">
               <label for="litres-per-hour" class="type-label">Litres per hour</label>
               <input
                 type="number"
@@ -41,11 +45,20 @@
                 aria-describedby="litres-helper litres-error"
                 required
               >
-              <p id="litres-helper" class="helper-text type-body">Check your generator's label or manual.</p>
+              <p id="litres-helper" class="helper-text type-body">Check the label or manual.</p>
               <p id="litres-error" class="field-error type-body hidden" role="alert"></p>
             </div>
 
-            <div class="form-group field-hours-run">
+            <div class="step-actions">
+              <button type="button" id="example-btn" class="btn btn-outline type-label">Try an example</button>
+              <button type="button" id="step1-next" class="btn btn-primary type-label">Next &rarr;</button>
+            </div>
+            <p id="example-notice" class="example-badge type-body hidden" role="status">Example values, not your real numbers.</p>
+          </div>
+
+          <!-- Step 2: Work week -->
+          <div class="step-pane hidden" id="step-2" data-step="2">
+            <div class="form-group">
               <label for="hours-run" class="type-label">Hours generator runs per day</label>
               <input
                 type="number"
@@ -62,23 +75,7 @@
               <p id="hours-run-error" class="field-error type-body hidden" role="alert"></p>
             </div>
 
-            <div class="form-group field-price">
-              <label for="price-per-litre" class="type-label">Price per litre (₦)</label>
-              <input
-                type="number"
-                id="price-per-litre"
-                name="pricePerLitre"
-                step="any"
-                min="0"
-                placeholder="e.g. 1000"
-                inputmode="decimal"
-                aria-describedby="price-error"
-                required
-              >
-              <p id="price-error" class="field-error type-body hidden" role="alert"></p>
-            </div>
-
-            <div class="form-group field-days">
+            <div class="form-group">
               <label for="working-days" class="type-label">Working days per month</label>
               <input
                 type="number"
@@ -95,7 +92,7 @@
               <p id="days-error" class="field-error type-body hidden" role="alert"></p>
             </div>
 
-            <div class="form-group field-work-hours">
+            <div class="form-group">
               <label for="working-hours" class="type-label">Working hours per day</label>
               <input
                 type="number"
@@ -111,59 +108,137 @@
               >
               <p id="work-hours-error" class="field-error type-body hidden" role="alert"></p>
             </div>
+
+            <div class="step-actions">
+              <button type="button" id="step2-back" class="btn btn-ghost type-label">&larr; Back</button>
+              <button type="button" id="step2-next" class="btn btn-primary type-label">Next &rarr;</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Fuel price -->
+          <div class="step-pane hidden" id="step-3" data-step="3">
+            <div class="form-group">
+              <label for="price-per-litre" class="type-label">Price per litre (₦)</label>
+              <input
+                type="number"
+                id="price-per-litre"
+                name="pricePerLitre"
+                step="any"
+                min="0"
+                placeholder="e.g. 1000"
+                inputmode="decimal"
+                aria-describedby="price-error"
+                required
+              >
+              <p id="price-error" class="field-error type-body hidden" role="alert"></p>
+            </div>
+
+            <div class="step-actions">
+              <button type="button" id="step3-back" class="btn btn-ghost type-label">&larr; Back</button>
+              <button type="button" id="step3-submit" class="btn btn-primary type-label">Calculate power cost</button>
+            </div>
           </div>
         </form>
       </section>
 
-      <!-- Results Panel (Right on Desktop, Sticky) -->
-      <section class="panel panel-results" aria-labelledby="results-heading">
-        <h2 id="results-heading" class="type-title">Cost Breakdown</h2>
+      <!-- Journey 2: Results Screen ("Today") -->
+      <section id="results-view" class="results-screen hidden" aria-labelledby="today-heading">
+        <h2 id="today-heading" class="sr-only">Today's Power Cost</h2>
 
-        <div class="results-cards">
-          <div class="result-card primary-card">
-            <span class="result-label type-label">Cost per working hour</span>
-            <div class="result-value-wrap">
-              <span id="cost-per-hour" class="result-value type-display">—</span>
-            </div>
-            <p class="result-explanation type-body">The baseline hourly fuel expense your freelance rates must cover.</p>
+        <!-- Hero Card -->
+        <div class="panel hero-card">
+          <div class="hero-top">
+            <span class="hero-label type-label">Cost per working hour</span>
+            <button type="button" id="edit-setup-btn" class="btn-text type-body">Edit generator details</button>
           </div>
-
-          <div class="secondary-cards-grid">
-            <div class="result-card secondary-card">
-              <span class="result-label type-label">Daily cost</span>
-              <span id="cost-per-day" class="result-value secondary-value">—</span>
-            </div>
-
-            <div class="result-card secondary-card">
-              <span class="result-label type-label">Monthly cost</span>
-              <span id="cost-per-month" class="result-value secondary-value">—</span>
-            </div>
+          <div class="hero-headline">
+            <span class="hero-prefix type-title">Power costs you</span>
+            <span id="hero-cost-per-hour" class="hero-number type-display" aria-live="polite">—</span>
+            <span class="hero-unit type-title">per working hour.</span>
           </div>
+          <p id="hero-explanation" class="hero-explanation type-body">—</p>
         </div>
 
-        <!-- Price Rise Slider -->
-        <div class="slider-container">
-          <div class="slider-header">
-            <label for="price-rise-slider" class="type-label">If fuel price rises: <span id="price-rise-percent">+0%</span></label>
+        <div class="results-grid">
+          <!-- Daily & Monthly Figures -->
+          <div class="panel sub-results-card">
+            <h3 class="type-title card-title">Total Fuel Expenses</h3>
+            <div class="secondary-figures">
+              <div class="figure-box">
+                <span class="figure-label type-label">Cost per day</span>
+                <span id="cost-per-day" class="figure-value type-title">—</span>
+              </div>
+              <div class="figure-box">
+                <span class="figure-label type-label">Cost per month</span>
+                <span id="cost-per-month" class="figure-value type-title">—</span>
+              </div>
+            </div>
           </div>
-          <input
-            type="range"
-            id="price-rise-slider"
-            min="0"
-            max="50"
-            step="1"
-            value="0"
-            aria-label="Fuel price increase percentage"
-          >
-          <div class="slider-result">
-            <span class="type-body slider-result-text">Projected cost per work hour:</span>
-            <strong id="projected-cost-per-hour" class="projected-value type-label">—</strong>
+
+          <!-- Slider: Fuel Price Changes -->
+          <div class="panel slider-card">
+            <div class="slider-header">
+              <h3 class="type-title card-title">Fuel price changes</h3>
+              <span id="price-rise-percent" class="rise-tag type-label">+0%</span>
+            </div>
+            <label for="price-rise-slider" class="sr-only">Projected fuel price rise percentage</label>
+            <input
+              type="range"
+              id="price-rise-slider"
+              min="0"
+              max="50"
+              step="1"
+              value="0"
+              aria-label="Fuel price increase percentage"
+            >
+            <div class="slider-result-row">
+              <span class="type-body">New cost per work hour:</span>
+              <strong id="projected-cost-per-hour" class="projected-number type-title">—</strong>
+            </div>
+          </div>
+
+          <!-- Protect Your Rate Card -->
+          <div class="panel rate-protection-card">
+            <h3 class="type-title card-title">Protect your rate</h3>
+            <p class="type-body card-description">Enter what you currently charge per hour to see how fuel impacts your take-home pay.</p>
+
+            <div class="form-group rate-input-group">
+              <label for="hourly-rate-input" class="type-label">Your current hourly rate (₦)</label>
+              <input
+                type="number"
+                id="hourly-rate-input"
+                min="0"
+                step="any"
+                placeholder="e.g. 5000"
+                inputmode="decimal"
+              >
+            </div>
+
+            <div id="rate-outcomes" class="rate-outcomes">
+              <div class="outcome-row">
+                <span class="type-label outcome-bullet">•</span>
+                <p id="rate-share-text" class="type-body outcome-text">Enter your rate to see the fuel share.</p>
+              </div>
+              <div class="outcome-row">
+                <span class="type-label outcome-bullet">•</span>
+                <p id="rate-quote-text" class="type-body outcome-text">See what to quote to protect your take-home.</p>
+              </div>
+            </div>
+
+            <div class="quote-copy-wrap">
+              <button type="button" id="copy-quote-line-btn" class="btn btn-outline type-label" disabled>Copy a line for my quote</button>
+              <span id="copy-toast" class="copy-toast type-body hidden" role="status">Copied</span>
+            </div>
           </div>
         </div>
       </section>
     </main>
 
+    <!-- Footer -->
     <footer class="app-footer">
+      <div class="footer-actions">
+        <button type="button" id="clear-data-btn" class="btn-text type-body">Clear my numbers</button>
+      </div>
       <p class="privacy-note type-body">Your numbers stay in your browser. Nothing is sent anywhere.</p>
     </footer>
   </div>
