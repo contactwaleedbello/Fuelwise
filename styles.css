@@ -1,0 +1,570 @@
+/* ==========================================================================
+   Fuelwise Design System & Styles
+   Built mobile-first with Vanilla CSS.
+   Uses the Rule of Eights, Material Design breakpoints, and WCAG AA compliance.
+   ========================================================================== */
+
+:root {
+  /* Spacing Scale (Rule of Eights) */
+  --space-half: 4px;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-6: 48px;
+
+  /* Material Design Breakpoints Reference */
+  --bp-compact: 0px;
+  --bp-medium: 600px;
+  --bp-expanded: 840px;
+  --max-content-width: 1040px;
+
+  /* Touch Target Standard */
+  --touch-target-min: 48px;
+
+  /* Semantic Type Roles (rem based, body >= 16px) */
+  --type-display: 2rem;      /* 32px on compact */
+  --type-headline: 1.75rem;  /* 28px on compact */
+  --type-title: 1.25rem;     /* 20px on compact */
+  --type-body: 1rem;         /* 16px */
+  --type-label: 1rem;        /* 16px */
+
+  /* Light Theme Palette (Calm slate with deep emerald accent) */
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --text-primary: #0f172a;   /* 17.85:1 on card, 17.06:1 on page */
+  --text-secondary: #334155; /* 10.35:1 on card, 9.90:1 on page */
+  --text-helper: #334155;    /* 10.35:1 on card */
+  --accent: #065f46;          /* 7.68:1 on card */
+  --accent-hover: #044e39;
+  --accent-contrast: #ffffff;/* 7.68:1 on accent */
+  --border-color: #cbd5e1;
+  --border-focus: #065f46;
+  --slider-track: #e2e8f0;
+  --error-text: #b91c1c;     /* 6.47:1 on card */
+  --badge-bg: #ecfdf5;
+  --badge-text: #065f46;     /* 7.29:1 on badge-bg */
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
+  --radius-sm: 8px;
+  --radius-md: 16px;
+}
+
+/* Dark Theme Palette (WCAG AA Compliant) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-page: #0b1120;
+    --bg-card: #1e293b;
+    --bg-subtle: #0f172a;
+    --text-primary: #f8fafc;   /* 13.98:1 on card, 18.00:1 on page */
+    --text-secondary: #cbd5e1; /* 9.85:1 on card, 12.68:1 on page */
+    --text-helper: #94a3b8;    /* 5.71:1 on card, 7.34:1 on page */
+    --accent: #34d399;          /* 7.61:1 on card */
+    --accent-hover: #10b981;
+    --accent-contrast: #0b1120;/* 9.79:1 on accent */
+    --border-color: #334155;
+    --border-focus: #34d399;
+    --slider-track: #334155;
+    --error-text: #fca5a5;     /* 7.71:1 on card */
+    --badge-bg: #064e3b;
+    --badge-text: #a7f3d0;     /* 7.58:1 on badge-bg */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Reset & Box Sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 100%; /* 16px */
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--type-body);
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: var(--bg-page);
+  min-height: 100vh;
+  padding: var(--space-3) 0 var(--space-6) 0;
+}
+
+/* Typography Utility Classes */
+.type-headline {
+  font-size: var(--type-headline);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.type-title {
+  font-size: var(--type-title);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.type-body {
+  font-size: var(--type-body);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.type-label {
+  font-size: var(--type-label);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.type-display {
+  font-size: var(--type-display);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--accent);
+}
+
+/* App Container */
+.app-layout {
+  width: 100%;
+  max-width: var(--max-content-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Header */
+.app-header {
+  padding: 0 var(--space-2) var(--space-4) var(--space-2);
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.header-subtitle {
+  max-width: 680px;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  margin-top: var(--space-1);
+}
+
+/* Buttons (at least 48px tall) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-target-min);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-outline:hover {
+  background-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover {
+  background-color: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.example-badge {
+  display: inline-block;
+  background-color: var(--badge-bg);
+  color: var(--badge-text);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  align-self: flex-start;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Grid System & Panels (Mobile-First / Compact: 4 columns, 16px margins)
+   ========================================================================== */
+.calculator-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: var(--space-2);
+  row-gap: var(--space-3);
+  padding: 0 var(--space-2);
+}
+
+.panel {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+}
+
+.panel-inputs {
+  grid-column: 1 / -1;
+}
+
+.panel-results {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Form Controls (at least 48px tall) */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.form-group label {
+  color: var(--text-primary);
+}
+
+.form-group input {
+  width: 100%;
+  min-height: var(--touch-target-min);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--type-body);
+  color: var(--text-primary);
+  background-color: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-group input:focus-visible {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(6, 95, 70, 0.2);
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-group input:focus-visible {
+    box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.25);
+  }
+}
+
+.form-group input.has-error {
+  border-color: var(--error-text);
+}
+
+.helper-text {
+  font-size: 0.875rem;
+  color: var(--text-helper);
+  line-height: 1.4;
+}
+
+.field-error {
+  font-size: 0.875rem;
+  color: var(--error-text);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Results Display */
+.results-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.result-card {
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.primary-card {
+  border-left: 4px solid var(--accent);
+}
+
+.result-label {
+  text-transform: uppercase;
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.result-value-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+}
+
+.secondary-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+
+.secondary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.result-explanation {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+}
+
+/* Price Rise Slider */
+.slider-container {
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#price-rise-percent {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-height: var(--touch-target-min);
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  background-color: var(--slider-track);
+  border-radius: 4px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  border: 3px solid var(--bg-card);
+  margin-top: -12px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.1s ease;
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.1);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 8px;
+  background-color: var(--slider-track);
+  border-radius: 4px;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  border: 3px solid var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.slider-result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-half);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--border-color);
+}
+
+.slider-result-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.projected-value {
+  font-size: 1.375rem;
+  color: var(--accent);
+}
+
+/* Footer & Privacy Note */
+.app-footer {
+  padding: var(--space-4) var(--space-2) 0 var(--space-2);
+  text-align: center;
+}
+
+.privacy-note {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   Medium Screens (600px to 839px)
+   8 columns, 24px side margins, 16px gutters
+   Inputs in 2 columns, results card full width below them
+   ========================================================================== */
+@media (min-width: 600px) {
+  .app-header {
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+  }
+
+  .calculator-grid {
+    grid-template-columns: repeat(8, 1fr);
+    column-gap: var(--space-2);
+    row-gap: var(--space-3);
+    padding: 0 var(--space-3);
+  }
+
+  .panel-inputs {
+    grid-column: 1 / -1;
+  }
+
+  .panel-results {
+    grid-column: 1 / -1;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--space-3);
+    row-gap: var(--space-3);
+  }
+
+  .field-work-hours {
+    grid-column: span 2;
+  }
+
+  .secondary-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .slider-result {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+/* ==========================================================================
+   Expanded Screens (840px and above)
+   12 columns, 24px side margins, 24px gutters, max-width 1040px centred
+   Inputs on left (5 cols), Results on right (7 cols) sticky
+   ========================================================================== */
+@media (min-width: 840px) {
+  :root {
+    --type-display: 3rem;     /* 48px on expanded */
+    --type-headline: 2.25rem; /* 36px */
+    --type-title: 1.5rem;     /* 24px */
+  }
+
+  .calculator-grid {
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--space-3);
+    row-gap: var(--space-3);
+    padding: 0 var(--space-3);
+    align-items: start;
+  }
+
+  .panel-inputs {
+    grid-column: span 5;
+  }
+
+  .form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .field-work-hours {
+    grid-column: auto;
+  }
+
+  .panel-results {
+    grid-column: span 7;
+    position: sticky;
+    top: var(--space-3);
+  }
+
+  .app-footer {
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

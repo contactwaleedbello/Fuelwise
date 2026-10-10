@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fuelwise — Generator Cost Calculator for Remote Workers</title>
+  <meta name="description" content="Calculate what generator power costs you per working hour in Nigeria, so you can price your freelance work honestly.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-layout">
+    <header class="app-header">
+      <div class="header-content">
+        <h1 class="type-headline">Fuelwise</h1>
+        <p class="type-body header-subtitle">A calculator for Nigerian remote workers and freelancers who run a generator. Know what power costs you per working hour so you can price your work honestly.</p>
+        <div class="header-actions">
+          <button type="button" id="example-btn" class="btn btn-outline type-label">Try an example</button>
+          <button type="button" id="clear-btn" class="btn btn-ghost type-label">Clear my numbers</button>
+        </div>
+        <p id="example-notice" class="example-badge type-body hidden" role="status">Example values, not your real numbers.</p>
+      </div>
+    </header>
+
+    <main class="calculator-grid">
+      <!-- Input Panel (Left on Desktop) -->
+      <section class="panel panel-inputs" aria-labelledby="inputs-heading">
+        <h2 id="inputs-heading" class="type-title">Your Generator &amp; Work Hours</h2>
+
+        <form id="calc-form" novalidate>
+          <div class="form-grid">
+            <div class="form-group field-litres">
+              <label for="litres-per-hour" class="type-label">Litres per hour</label>
+              <input
+                type="number"
+                id="litres-per-hour"
+                name="litresPerHour"
+                step="any"
+                min="0"
+                placeholder="e.g. 1.5"
+                inputmode="decimal"
+                aria-describedby="litres-helper litres-error"
+                required
+              >
+              <p id="litres-helper" class="helper-text type-body">Check your generator's label or manual.</p>
+              <p id="litres-error" class="field-error type-body hidden" role="alert"></p>
+            </div>
+
+            <div class="form-group field-hours-run">
+              <label for="hours-run" class="type-label">Hours generator runs per day</label>
+              <input
+                type="number"
+                id="hours-run"
+                name="hoursRunPerDay"
+                step="any"
+                min="0"
+                max="24"
+                placeholder="e.g. 10"
+                inputmode="decimal"
+                aria-describedby="hours-run-error"
+                required
+              >
+              <p id="hours-run-error" class="field-error type-body hidden" role="alert"></p>
+            </div>
+
+            <div class="form-group field-price">
+              <label for="price-per-litre" class="type-label">Price per litre (₦)</label>
+              <input
+                type="number"
+                id="price-per-litre"
+                name="pricePerLitre"
+                step="any"
+                min="0"
+                placeholder="e.g. 1000"
+                inputmode="decimal"
+                aria-describedby="price-error"
+                required
+              >
+              <p id="price-error" class="field-error type-body hidden" role="alert"></p>
+            </div>
+
+            <div class="form-group field-days">
+              <label for="working-days" class="type-label">Working days per month</label>
+              <input
+                type="number"
+                id="working-days"
+                name="workingDaysPerMonth"
+                step="any"
+                min="0"
+                max="31"
+                placeholder="e.g. 26"
+                inputmode="decimal"
+                aria-describedby="days-error"
+                required
+              >
+              <p id="days-error" class="field-error type-body hidden" role="alert"></p>
+            </div>
+
+            <div class="form-group field-work-hours">
+              <label for="working-hours" class="type-label">Working hours per day</label>
+              <input
+                type="number"
+                id="working-hours"
+                name="workingHoursPerDay"
+                step="any"
+                min="0"
+                max="24"
+                placeholder="e.g. 8"
+                inputmode="decimal"
+                aria-describedby="work-hours-error"
+                required
+              >
+              <p id="work-hours-error" class="field-error type-body hidden" role="alert"></p>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Results Panel (Right on Desktop, Sticky) -->
+      <section class="panel panel-results" aria-labelledby="results-heading">
+        <h2 id="results-heading" class="type-title">Cost Breakdown</h2>
+
+        <div class="results-cards">
+          <div class="result-card primary-card">
+            <span class="result-label type-label">Cost per working hour</span>
+            <div class="result-value-wrap">
+              <span id="cost-per-hour" class="result-value type-display">—</span>
+            </div>
+            <p class="result-explanation type-body">The baseline hourly fuel expense your freelance rates must cover.</p>
+          </div>
+
+          <div class="secondary-cards-grid">
+            <div class="result-card secondary-card">
+              <span class="result-label type-label">Daily cost</span>
+              <span id="cost-per-day" class="result-value secondary-value">—</span>
+            </div>
+
+            <div class="result-card secondary-card">
+              <span class="result-label type-label">Monthly cost</span>
+              <span id="cost-per-month" class="result-value secondary-value">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Price Rise Slider -->
+        <div class="slider-container">
+          <div class="slider-header">
+            <label for="price-rise-slider" class="type-label">If fuel price rises: <span id="price-rise-percent">+0%</span></label>
+          </div>
+          <input
+            type="range"
+            id="price-rise-slider"
+            min="0"
+            max="50"
+            step="1"
+            value="0"
+            aria-label="Fuel price increase percentage"
+          >
+          <div class="slider-result">
+            <span class="type-body slider-result-text">Projected cost per work hour:</span>
+            <strong id="projected-cost-per-hour" class="projected-value type-label">—</strong>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p class="privacy-note type-body">Your numbers stay in your browser. Nothing is sent anywhere.</p>
+    </footer>
+  </div>
+
+  <script src="calc.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
