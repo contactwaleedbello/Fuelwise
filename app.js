@@ -1,10 +1,12 @@
 /**
  * DOM wiring and event handling for Fuelwise.
- * Connects pure functions in calc.js with the UI.
+ * Connects pure functions in calc.js with the UI and persists numbers locally.
  */
 
 (function initFuelwise() {
   'use strict';
+
+  const STORAGE_KEY = 'fuelwise_saved_inputs';
 
   // Currency formatter for Nigerian Naira
   const nairaFormatter = new Intl.NumberFormat('en-NG', {
@@ -64,6 +66,36 @@
     };
   }
 
+  function saveInputsToStorage(inputs) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(inputs));
+    } catch (err) {
+      // Storage unavailable, quota exceeded, or disabled in private browsing.
+      // App continues working seamlessly.
+    }
+  }
+
+  function loadInputsFromStorage() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (err) {
+      // Storage read failed, fallback to empty
+      return null;
+    }
+    return null;
+  }
+
+  function clearInputsFromStorage() {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (err) {
+      // Storage removal failed, ignore
+    }
+  }
+
   function clearErrors() {
     for (const key of Object.keys(fieldMap)) {
       const { input, errorEl } = fieldMap[key];
@@ -116,6 +148,8 @@
       updateSliderProjectedCost();
       return;
     }
+
+    saveInputsToStorage(raw);
 
     const errors = validate(raw);
 
@@ -177,12 +211,27 @@
       exampleNotice.classList.add('hidden');
     }
 
+    clearInputsFromStorage();
     clearErrors();
     currentBaseCostPerHour = null;
     resultPerHour.textContent = '—';
     resultDaily.textContent = '—';
     resultMonthly.textContent = '—';
     updateSliderProjectedCost();
+  }
+
+  // Restore saved inputs if available
+  function restoreSavedInputs() {
+    const saved = loadInputsFromStorage();
+    if (!saved) return;
+
+    if (saved.litresPerHour !== undefined) inputLitres.value = saved.litresPerHour;
+    if (saved.hoursRunPerDay !== undefined) inputHoursRun.value = saved.hoursRunPerDay;
+    if (saved.pricePerLitre !== undefined) inputPrice.value = saved.pricePerLitre;
+    if (saved.workingDaysPerMonth !== undefined) inputDays.value = saved.workingDaysPerMonth;
+    if (saved.workingHoursPerDay !== undefined) inputWorkHours.value = saved.workingHoursPerDay;
+
+    calculateAndRender();
   }
 
   // Event Listeners
@@ -210,6 +259,6 @@
     btnClear.addEventListener('click', clearAll);
   }
 
-  // Initial render
-  calculateAndRender();
+  // Initialize
+  restoreSavedInputs();
 })();
