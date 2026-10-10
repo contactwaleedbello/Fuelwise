@@ -21,6 +21,22 @@ function withPriceRise(pricePerLitre, risePercent) {
   return pricePerLitre * (1 + risePercent / 100);
 }
 
+function powerShare(costPerWorkHour, hourlyRate) {
+  if (!hourlyRate || hourlyRate <= 0) return 0;
+  return (costPerWorkHour / hourlyRate) * 100;
+}
+
+function neededQuote(costPerWorkHour, targetTakeHome) {
+  if (!targetTakeHome || targetTakeHome <= 0) return costPerWorkHour;
+  return Number(targetTakeHome) + Number(costPerWorkHour);
+}
+
+function checkInChange(previousCostPerHour, currentCostPerHour) {
+  const diff = currentCostPerHour - previousCostPerHour;
+  const percent = previousCostPerHour > 0 ? (diff / previousCostPerHour) * 100 : 0;
+  return { diff, percent };
+}
+
 function validate(inputs) {
   const errors = [];
   const fields = [
@@ -66,6 +82,9 @@ if (typeof module !== 'undefined' && module.exports) {
     monthlyCost,
     costPerWorkHour,
     withPriceRise,
+    powerShare,
+    neededQuote,
+    checkInChange,
     validate
   };
 }
