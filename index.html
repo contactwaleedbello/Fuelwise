@@ -197,6 +197,36 @@
             </div>
           </div>
 
+          <!-- Journey 3: Weekly Check-In Card -->
+          <div class="panel checkin-card">
+            <h3 class="type-title card-title">Update this week's fuel price</h3>
+            <p class="type-body card-description">Fuel prices change often. Update your price here in 10 seconds to keep your hourly cost accurate.</p>
+
+            <form id="checkin-form" class="checkin-form" novalidate>
+              <div class="checkin-input-row">
+                <div class="form-group checkin-field">
+                  <label for="checkin-price-input" class="type-label">This week's price per litre (₦)</label>
+                  <input
+                    type="number"
+                    id="checkin-price-input"
+                    min="0"
+                    step="any"
+                    placeholder="e.g. 1200"
+                    inputmode="decimal"
+                    required
+                  >
+                  <p id="checkin-error" class="field-error type-body hidden" role="alert"></p>
+                </div>
+                <button type="submit" id="checkin-submit-btn" class="btn btn-primary type-label">Save price</button>
+              </div>
+            </form>
+
+            <div id="checkin-feedback" class="checkin-feedback hidden" role="status">
+              <span class="type-label feedback-icon" id="feedback-icon">•</span>
+              <p id="checkin-change-text" class="type-body feedback-text">—</p>
+            </div>
+          </div>
+
           <!-- Protect Your Rate Card -->
           <div class="panel rate-protection-card">
             <h3 class="type-title card-title">Protect your rate</h3>
@@ -228,6 +258,54 @@
             <div class="quote-copy-wrap">
               <button type="button" id="copy-quote-line-btn" class="btn btn-outline type-label" disabled>Copy a line for my quote</button>
               <span id="copy-toast" class="copy-toast type-body hidden" role="status">Copied</span>
+            </div>
+          </div>
+
+          <!-- Journey 4: History & Chart -->
+          <div class="panel history-card" id="history-section">
+            <div class="history-header">
+              <h3 class="type-title card-title">Price &amp; Cost History</h3>
+              <button type="button" id="toggle-table-btn" class="btn-text type-body">Show as table</button>
+            </div>
+
+            <!-- Empty State (0 check-ins) -->
+            <div id="history-empty" class="history-state-box">
+              <p class="type-body">No check-ins yet. Weekly updates will draw your fuel cost trend over time.</p>
+              <button type="button" id="start-checkin-btn" class="btn btn-outline type-label">Record this week's price</button>
+            </div>
+
+            <!-- Single Check-in State (1 check-in) -->
+            <div id="history-single" class="history-state-box hidden">
+              <div class="single-point-graphic" aria-hidden="true">
+                <svg width="48" height="48" viewBox="0 0 48 48">
+                  <circle cx="24" cy="24" r="8" fill="var(--accent)" />
+                </svg>
+              </div>
+              <p id="history-single-text" class="type-body">Check in next week to see your trend.</p>
+            </div>
+
+            <!-- Chart Container (>= 2 check-ins) -->
+            <div id="history-chart-wrap" class="history-chart-wrap hidden">
+              <div class="svg-container" id="svg-chart-container">
+                <!-- SVG dynamically injected by app.js -->
+              </div>
+              <p id="history-summary" class="history-summary type-body"></p>
+            </div>
+
+            <!-- Accessible Table Alternative -->
+            <div id="history-table-wrap" class="history-table-wrap hidden">
+              <table class="history-table" aria-label="Weekly fuel check-in history">
+                <thead>
+                  <tr>
+                    <th scope="col" class="type-label">Week</th>
+                    <th scope="col" class="type-label">Fuel Price</th>
+                    <th scope="col" class="type-label">Cost per Work Hour</th>
+                  </tr>
+                </thead>
+                <tbody id="history-table-body">
+                  <!-- Rows injected by app.js -->
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

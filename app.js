@@ -1,6 +1,6 @@
 /**
  * Fuelwise Application Logic
- * Implements Journey 1 (guided 3-step setup) and Journey 2 (Results & Rate Protection).
+ * Implements Journeys 1-4: Setup, Results & Rate Protection, Weekly Check-in, and History.
  * Pure client-side, zero network requests, localStorage persistence.
  */
 
@@ -72,6 +72,24 @@
   const btnCopyQuoteLine = document.getElementById('copy-quote-line-btn');
   const copyToast = document.getElementById('copy-toast');
 
+  // DOM Elements - Journey 3: Weekly Check-In
+  const formCheckin = document.getElementById('checkin-form');
+  const inputCheckinPrice = document.getElementById('checkin-price-input');
+  const errorCheckin = document.getElementById('checkin-error');
+  const feedbackCheckin = document.getElementById('checkin-feedback');
+  const textCheckinChange = document.getElementById('checkin-change-text');
+
+  // DOM Elements - Journey 4: History & Chart
+  const historyEmpty = document.getElementById('history-empty');
+  const btnStartCheckin = document.getElementById('start-checkin-btn');
+  const historySingle = document.getElementById('history-single');
+  const historyChartWrap = document.getElementById('history-chart-wrap');
+  const svgContainer = document.getElementById('svg-chart-container');
+  const historySummary = document.getElementById('history-summary');
+  const historyTableWrap = document.getElementById('history-table-wrap');
+  const historyTableBody = document.getElementById('history-table-body');
+  const btnToggleTable = document.getElementById('toggle-table-btn');
+
   // State
   let currentStep = 1;
   let baseCostPerHour = 0;
@@ -102,6 +120,10 @@
     3: "Today's fuel price"
   };
 
+  function getCurrentWeekIndex() {
+    return Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7));
+  }
+
   // Local Storage Helpers
   function saveState() {
     try {
@@ -118,6 +140,7 @@
         const parsed = JSON.parse(v2Data);
         if (parsed && parsed.version === 2) {
           Object.assign(appData, parsed);
+          if (!Array.isArray(appData.checkIns)) appData.checkIns = [];
           return true;
         }
       }
@@ -299,6 +322,9 @@
     // Update Rate Protection
     updateRateProtection();
 
+    // Update History Chart and Table
+    renderHistory();
+
     // Mark milestone
     appData.milestones.hasCalculated = true;
     saveState();
@@ -376,6 +402,189 @@
     } catch (err) {}
   }
 
+  // ==========================================================================
+  // Journey 3: Weekly Check-In Logic
+  // ==========================================================================
+  function handleCheckinSubmit(e) {
+    e.preventDefault();
+    clearFieldError(inputCheckinPrice, errorCheckin);
+
+    const raw = inputCheckinPrice.value.trim();
+    const newPrice = Number(raw);
+
+    if (!raw || Number.isNaN(newPrice) || newPrice <= 0) {
+      setFieldError(inputCheckinPrice, errorCheckin, 'Price per litre: enter a number greater than 0.');
+      return;
+    }
+
+    const litres = Number(appData.setup.litresPerHour);
+    const hours = Number(appData.setup.hoursRunPerDay);
+    const days = Number(appData.setup.workingDaysPerMonth);
+    const workHours = Number(appData.setup.workingHoursPerDay);
+
+    const newDaily = dailyCost(litres, hours, newPrice);
+    const newMonthly = monthlyCost(newDaily, days);
+    const newCostPerHour = costPerWorkHour(newMonthly, days, workHours);
+
+    const currentWeek = getCurrentWeekIndex();
+    const existingIndex = appData.checkIns.findIndex(c => c.weekIndex === currentWeek);
+    const prevEntry = existingIndex > 0
+      ? appData.checkIns[existingIndex - 1]
+      : (appData.checkIns.length > 0 ? appData.checkIns[appData.checkIns.length - 1] : null);
+
+    // Compute change message
+    if (prevEntry) {
+      const { diff, percent } = checkInChange(prevEntry.costPerWorkHour, newCostPerHour);
+      const absDiff = Math.abs(diff);
+      const absPercent = Math.abs(percent).toFixed(1);
+
+      if (diff > 0) {
+        textCheckinChange.textContent = `Up ₦${Math.round(absDiff).toLocaleString()} an hour since last check-in (+${absPercent}%).`;
+      } else if (diff < 0) {
+        textCheckinChange.textContent = `Down ₦${Math.round(absDiff).toLocaleString()} an hour since last check-in (-${absPercent}%).`;
+      } else {
+        textCheckinChange.textContent = `Unchanged from last check-in (₦${Math.round(newCostPerHour).toLocaleString()}/hr).`;
+      }
+    } else {
+      textCheckinChange.textContent = `Recorded at ₦${Math.round(newCostPerHour).toLocaleString()} per working hour. Check in next week to see your change.`;
+    }
+
+    feedbackCheckin.classList.remove('hidden');
+
+    // Update or append check-in record
+    if (existingIndex !== -1) {
+      appData.checkIns[existingIndex].pricePerLitre = newPrice;
+      appData.checkIns[existingIndex].costPerWorkHour = newCostPerHour;
+    } else {
+      appData.checkIns.push({
+        weekIndex: currentWeek,
+        pricePerLitre: newPrice,
+        costPerWorkHour: newCostPerHour
+      });
+    }
+
+    // Sort check-ins ascending by weekIndex
+    appData.checkIns.sort((a, b) => a.weekIndex - b.weekIndex);
+
+    // Update current price
+    appData.setup.pricePerLitre = newPrice.toString();
+    inputPrice.value = newPrice.toString();
+    inputCheckinPrice.value = '';
+
+    // Re-render and persist
+    renderResults();
+  }
+
+  // ==========================================================================
+  // Journey 4: History & Hand-Built SVG Line Chart
+  // ==========================================================================
+  function renderHistory() {
+    const list = appData.checkIns || [];
+
+    // Render Table Rows
+    historyTableBody.innerHTML = '';
+    for (let i = 0; i < list.length; i++) {
+      const item = list[i];
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>Week ${i + 1}</td>
+        <td>₦${item.pricePerLitre.toLocaleString()}</td>
+        <td>₦${Math.round(item.costPerWorkHour).toLocaleString()}/hr</td>
+      `;
+      historyTableBody.appendChild(tr);
+    }
+
+    if (list.length === 0) {
+      historyEmpty.classList.remove('hidden');
+      historySingle.classList.add('hidden');
+      historyChartWrap.classList.add('hidden');
+      return;
+    }
+
+    if (list.length === 1) {
+      historyEmpty.classList.add('hidden');
+      historySingle.classList.remove('hidden');
+      historyChartWrap.classList.add('hidden');
+      return;
+    }
+
+    // >= 2 Check-ins: Render SVG Line Chart
+    historyEmpty.classList.add('hidden');
+    historySingle.classList.add('hidden');
+    historyChartWrap.classList.remove('hidden');
+
+    const width = 500;
+    const height = 200;
+    const paddingLeft = 60;
+    const paddingRight = 30;
+    const paddingTop = 25;
+    const paddingBottom = 40;
+
+    const plotWidth = width - paddingLeft - paddingRight;
+    const plotHeight = height - paddingTop - paddingBottom;
+
+    const values = list.map(c => c.costPerWorkHour);
+    let minVal = Math.min(...values);
+    let maxVal = Math.max(...values);
+
+    if (minVal === maxVal) {
+      minVal = minVal * 0.9;
+      maxVal = maxVal * 1.1;
+    }
+
+    const range = maxVal - minVal || 1;
+
+    // Calculate Coordinates
+    const points = list.map((c, i) => {
+      const x = paddingLeft + (i / (list.length - 1)) * plotWidth;
+      const y = paddingTop + plotHeight - ((c.costPerWorkHour - minVal) / range) * plotHeight;
+      return { x, y, c, index: i + 1 };
+    });
+
+    const polylinePoints = points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+
+    // SVG String Construction
+    let svgHtml = `
+      <svg class="history-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Line chart showing power cost per working hour across check-ins">
+        <title>Fuel Cost per Work Hour Trend</title>
+        <!-- Horizontal Grid Lines & Labels -->
+        <line x1="${paddingLeft}" y1="${paddingTop}" x2="${width - paddingRight}" y2="${paddingTop}" stroke="var(--border-color)" stroke-dasharray="3 3" />
+        <text x="${paddingLeft - 8}" y="${paddingTop + 4}" font-size="11" fill="var(--text-secondary)" text-anchor="end">₦${Math.round(maxVal).toLocaleString()}</text>
+
+        <line x1="${paddingLeft}" y1="${paddingTop + plotHeight / 2}" x2="${width - paddingRight}" y2="${paddingTop + plotHeight / 2}" stroke="var(--border-color)" stroke-dasharray="3 3" />
+        <text x="${paddingLeft - 8}" y="${paddingTop + plotHeight / 2 + 4}" font-size="11" fill="var(--text-secondary)" text-anchor="end">₦${Math.round((maxVal + minVal) / 2).toLocaleString()}</text>
+
+        <line x1="${paddingLeft}" y1="${paddingTop + plotHeight}" x2="${width - paddingRight}" y2="${paddingTop + plotHeight}" stroke="var(--border-color)" />
+        <text x="${paddingLeft - 8}" y="${paddingTop + plotHeight + 4}" font-size="11" fill="var(--text-secondary)" text-anchor="end">₦${Math.round(minVal).toLocaleString()}</text>
+
+        <!-- Trend Polyline -->
+        <polyline points="${polylinePoints}" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    `;
+
+    // Data Points and X-Axis Labels
+    for (const pt of points) {
+      svgHtml += `
+        <circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="5" fill="var(--bg-card)" stroke="var(--accent)" stroke-width="3">
+          <title>Week ${pt.index}: ₦${Math.round(pt.c.costPerWorkHour).toLocaleString()}/hr (Price: ₦${pt.c.pricePerLitre})</title>
+        </circle>
+        <text x="${pt.x.toFixed(1)}" y="${height - 12}" font-size="11" fill="var(--text-secondary)" text-anchor="middle">W${pt.index}</text>
+      `;
+    }
+
+    svgHtml += `</svg>`;
+    svgContainer.innerHTML = svgHtml;
+
+    // Insight summary line
+    const insight = generateInsight(list);
+    historySummary.textContent = insight || `Tracking ${list.length} check-in weeks.`;
+  }
+
+  function toggleHistoryTable() {
+    const isHidden = historyTableWrap.classList.contains('hidden');
+    historyTableWrap.classList.toggle('hidden', !isHidden);
+    btnToggleTable.textContent = isHidden ? 'Hide table' : 'Show as table';
+  }
+
   function populateExample() {
     inputLitres.value = '1.5';
     inputHoursRun.value = '10';
@@ -404,14 +613,17 @@
     inputPrice.value = '';
     inputHourlyRate.value = '';
     sliderRise.value = '0';
+    inputCheckinPrice.value = '';
 
     if (exampleNotice) exampleNotice.classList.add('hidden');
+    feedbackCheckin.classList.add('hidden');
 
     clearFieldError(inputLitres, errorLitres);
     clearFieldError(inputHoursRun, errorHoursRun);
     clearFieldError(inputDays, errorDays);
     clearFieldError(inputWorkHours, errorWorkHours);
     clearFieldError(inputPrice, errorPrice);
+    clearFieldError(inputCheckinPrice, errorCheckin);
 
     clearState();
 
@@ -468,6 +680,18 @@
   btnCopyQuoteLine.addEventListener('click', copyQuoteLine);
 
   btnClear.addEventListener('click', clearAllData);
+
+  // Check-In & History Event Listeners
+  formCheckin.addEventListener('submit', handleCheckinSubmit);
+
+  if (btnStartCheckin) {
+    btnStartCheckin.addEventListener('click', () => {
+      inputCheckinPrice.focus();
+      inputCheckinPrice.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
+  btnToggleTable.addEventListener('click', toggleHistoryTable);
 
   // Initialize on page load
   const hasLoaded = loadState();

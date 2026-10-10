@@ -616,6 +616,137 @@ input[type="range"]::-moz-range-thumb {
   transition: opacity 0.2s ease;
 }
 
+/* ==========================================================================
+   Journey 3: Weekly Check-In Card
+   ========================================================================== */
+.checkin-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.checkin-input-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.checkin-field {
+  flex: 1 1 200px;
+}
+
+.checkin-feedback {
+  background-color: var(--bg-subtle);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  margin-top: var(--space-1);
+}
+
+.feedback-icon {
+  color: var(--accent);
+}
+
+.feedback-text {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Journey 4: History Card & Hand-Built SVG Line Chart
+   ========================================================================== */
+.history-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  grid-column: 1 / -1;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.history-state-box {
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4) var(--space-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+
+.single-point-graphic {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.history-chart-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.svg-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-subtle);
+  padding: var(--space-2);
+}
+
+.history-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 200px;
+}
+
+.history-summary {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.history-table-wrap {
+  margin-top: var(--space-2);
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.history-table th,
+.history-table td {
+  padding: var(--space-1) var(--space-2);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.history-table th {
+  background-color: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.history-table td {
+  color: var(--text-secondary);
+}
+
 /* Footer */
 .app-footer {
   margin-top: var(--space-6);
