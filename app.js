@@ -174,6 +174,21 @@
     3: "Today's fuel price"
   };
 
+  const viewTitles = {
+    home: 'Fuelwise — Generator Cost Calculator',
+    step1: 'Fuelwise — Your Generator (Step 1 of 3)',
+    step2: 'Fuelwise — Your Work Week (Step 2 of 3)',
+    step3: "Fuelwise — Today's Fuel Price (Step 3 of 3)",
+    results: 'Fuelwise — Generator Cost Breakdown',
+    checkin: 'Fuelwise — Weekly Check-In'
+  };
+
+  function updatePageTitle(viewKey) {
+    if (viewTitles[viewKey]) {
+      document.title = viewTitles[viewKey];
+    }
+  }
+
   function getCurrentWeekIndex() {
     return Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7));
   }
@@ -322,6 +337,8 @@
     step2Pane.classList.toggle('hidden', step !== 2);
     step3Pane.classList.toggle('hidden', step !== 3);
 
+    updatePageTitle('step' + step);
+
     const firstInput = [inputLitres, inputHoursRun, inputPrice][step - 1];
     if (firstInput) firstInput.focus();
   }
@@ -396,6 +413,7 @@
     // Show results view
     flowContainer.classList.add('hidden');
     resultsView.classList.remove('hidden');
+    updatePageTitle('results');
   }
 
   function updateSlider() {
@@ -936,6 +954,17 @@
   btnClearAllData.addEventListener('click', openClearModal);
   btnCancelClear.addEventListener('click', closeClearModal);
   btnConfirmClear.addEventListener('click', performClearAllData);
+
+  const btnGetStarted = document.getElementById('get-started-btn');
+  if (btnGetStarted) {
+    btnGetStarted.addEventListener('click', (e) => {
+      e.preventDefault();
+      resultsView.classList.add('hidden');
+      flowContainer.classList.remove('hidden');
+      goToStep(1);
+      flowContainer.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
 
   if (btnThemeToggle) {
     btnThemeToggle.addEventListener('click', () => {

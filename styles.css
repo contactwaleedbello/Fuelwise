@@ -29,6 +29,7 @@
   --type-title: 1.25rem;     /* 20px on compact */
   --type-body: 1rem;         /* 16px */
   --type-label: 1rem;        /* 16px */
+  --type-label-large: 0.875rem; /* 14px Label Large (M3 style) */
 
   /* Light Theme Palette (Fuel Amber & Deep Navy) */
   --bg-page: #f8fafc;
@@ -146,6 +147,13 @@ body {
   color: var(--text-secondary);
 }
 
+.type-label-large {
+  font-size: var(--type-label-large);
+  font-weight: 600;
+  line-height: 1.25rem;
+  letter-spacing: 0.01em;
+}
+
 .type-display {
   font-size: var(--type-display);
   font-weight: 800;
@@ -164,7 +172,14 @@ body {
 
 /* Header */
 .app-header {
+  background-color: var(--bg-card);
+  border-bottom: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-3);
   margin-bottom: var(--space-4);
+  border: 1px solid var(--border-color);
+  border-bottom: none;
 }
 
 .header-content {
@@ -178,11 +193,13 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: var(--space-2);
+  flex-wrap: wrap;
 }
 
 .brand-logo-wrap {
   display: flex;
   align-items: center;
+  gap: var(--space-2);
 }
 
 .brand-logo {
@@ -209,13 +226,17 @@ body {
   display: none;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
 .theme-toggle-btn {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  min-height: var(--touch-target-min);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-full);
 }
 
 .theme-icon {
@@ -359,8 +380,13 @@ body {
   align-items: center;
   justify-content: center;
   min-height: var(--touch-target-min);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-sm);
+  padding: 1rem 1.125rem; /* 16px vertical, 18px horizontal in rem */
+  border-radius: 0.5rem;   /* 8px corner radius in rem */
+  font-family: inherit;
+  font-size: var(--type-label-large); /* Label Large text style default */
+  font-weight: 600;
+  line-height: 1.25rem;
+  letter-spacing: 0.01em;
   cursor: pointer;
   border: 2px solid transparent;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
