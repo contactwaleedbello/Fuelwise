@@ -9,10 +9,15 @@
 </head>
 <body>
   <div class="app-layout">
-    <!-- Header -->
+    <!-- Header with Brand Logo -->
     <header class="app-header">
       <div class="header-content">
-        <h1 class="type-headline">Fuelwise</h1>
+        <div class="brand-bar">
+          <picture class="brand-picture">
+            <source srcset="logos/darkmode_cropped.jpg" media="(prefers-color-scheme: dark)">
+            <img src="logos/lightmode_cropped.jpg" alt="Fuelwise logo" class="brand-logo" width="165" height="50">
+          </picture>
+        </div>
         <p class="type-body header-subtitle">A calculator for Nigerian remote workers and freelancers who run a generator. Know what power costs you per working hour so you can price your work honestly.</p>
       </div>
     </header>
@@ -21,7 +26,10 @@
       <!-- Journey 1: Three-Step Setup Flow -->
       <section id="setup-flow" class="flow-container panel" aria-labelledby="flow-heading">
         <div class="flow-progress">
-          <span id="step-indicator" class="step-indicator type-label">Step 1 of 3</span>
+          <div class="progress-meta">
+            <span id="step-indicator" class="step-indicator type-label">Step 1 of 3</span>
+            <span class="progress-percent type-label" id="step-percent">33%</span>
+          </div>
           <div class="progress-bar-track" role="progressbar" id="progress-bar" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">
             <div class="progress-bar-fill" id="progress-fill" style="width: 33.33%;"></div>
           </div>
@@ -145,10 +153,10 @@
       <section id="results-view" class="results-screen hidden" aria-labelledby="today-heading">
         <h2 id="today-heading" class="sr-only">Today's Power Cost</h2>
 
-        <!-- Hero Card -->
+        <!-- Hero Card (Vibrant Fuel Amber & 48px Display Num) -->
         <div class="panel hero-card">
           <div class="hero-top">
-            <span class="hero-label type-label">Cost per working hour</span>
+            <span class="hero-label type-label">Hourly Fuel Rate</span>
             <button type="button" id="edit-setup-btn" class="btn-text type-body">Edit generator details</button>
           </div>
           <div class="hero-headline">
@@ -308,6 +316,57 @@
               </table>
             </div>
           </div>
+
+          <!-- Phase D: Gamification (Progress, Streak & Milestones) -->
+          <div class="panel progress-card" id="progress-section">
+            <div class="progress-section-header">
+              <div>
+                <h3 class="type-title card-title">Your Tracking Progress</h3>
+                <p class="type-body card-description">Honest rewards for staying aware of your operational costs.</p>
+              </div>
+              <div class="streak-pill" id="streak-pill" title="Gentle weekly streak">
+                <span class="streak-fire" aria-hidden="true">⚡</span>
+                <span id="streak-text" class="type-label">Current streak: 0 weeks</span>
+              </div>
+            </div>
+
+            <!-- Weeks Tracked Progress Bar -->
+            <div class="milestone-progress-wrap">
+              <div class="milestone-progress-labels">
+                <span class="type-label" id="weeks-tracked-label">0 weeks tracked</span>
+                <span class="type-label" id="next-target-label">Next milestone: 4 weeks</span>
+              </div>
+              <div class="progress-bar-track" role="progressbar" id="milestone-progress-bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar-fill" id="milestone-progress-fill" style="width: 0%;"></div>
+              </div>
+              <p id="streak-encouragement" class="type-body streak-note hidden"></p>
+            </div>
+
+            <!-- Milestone Badges Grid -->
+            <div class="milestones-grid" id="milestones-grid" aria-label="Milestones achieved">
+              <!-- Rendered dynamically by app.js -->
+            </div>
+          </div>
+
+          <!-- Phase E: Data Safety & Portability Panel -->
+          <div class="panel data-safety-card" id="data-safety-section">
+            <h3 class="type-title card-title">Data Safety &amp; Portability</h3>
+            <p class="type-body card-description">Your data lives exclusively in this browser. Export a backup anytime to keep your history safe.</p>
+
+            <div class="data-actions-grid">
+              <button type="button" id="download-backup-btn" class="btn btn-outline type-label">
+                Download my data (.json)
+              </button>
+              <label for="restore-file-input" class="btn btn-ghost type-label file-upload-label">
+                Restore from file
+                <input type="file" id="restore-file-input" accept=".json,application/json" class="sr-only">
+              </label>
+              <button type="button" id="reminder-ics-btn" class="btn btn-ghost type-label">
+                Add weekly reminder to calendar
+              </button>
+            </div>
+            <p id="storage-status-message" class="type-body status-note hidden" role="status"></p>
+          </div>
         </div>
       </section>
     </main>
@@ -315,10 +374,22 @@
     <!-- Footer -->
     <footer class="app-footer">
       <div class="footer-actions">
-        <button type="button" id="clear-data-btn" class="btn-text type-body">Clear my numbers</button>
+        <button type="button" id="clear-all-data-btn" class="btn-text type-body">Clear all my data</button>
       </div>
       <p class="privacy-note type-body">Your numbers stay in your browser. Nothing is sent anywhere.</p>
     </footer>
+
+    <!-- Confirmation Modal for Clear All Data -->
+    <div id="clear-confirm-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="clear-modal-title">
+      <div class="modal-card panel">
+        <h3 id="clear-modal-title" class="type-title">Clear all your numbers?</h3>
+        <p class="type-body">This will permanently remove your generator setup, check-in history, and milestone progress from this browser.</p>
+        <div class="modal-actions">
+          <button type="button" id="cancel-clear-btn" class="btn btn-ghost type-label">Cancel</button>
+          <button type="button" id="confirm-clear-btn" class="btn btn-danger type-label">Yes, clear everything</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="calc.js"></script>

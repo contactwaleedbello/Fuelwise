@@ -1,6 +1,6 @@
 /**
  * Fuelwise Application Logic
- * Implements Journeys 1-4: Setup, Results & Rate Protection, Weekly Check-in, and History.
+ * Implements Journeys 1-4, Gamification (Streak & Milestones), Data Safety, and Calendar Reminder.
  * Pure client-side, zero network requests, localStorage persistence.
  */
 
@@ -21,6 +21,7 @@
   const flowContainer = document.getElementById('setup-flow');
   const resultsView = document.getElementById('results-view');
   const stepIndicator = document.getElementById('step-indicator');
+  const stepPercent = document.getElementById('step-percent');
   const progressFill = document.getElementById('progress-fill');
   const flowHeading = document.getElementById('flow-heading');
 
@@ -52,7 +53,6 @@
   // DOM Elements - Example & Clear
   const btnExample = document.getElementById('example-btn');
   const exampleNotice = document.getElementById('example-notice');
-  const btnClear = document.getElementById('clear-data-btn');
 
   // DOM Elements - Results ("Today")
   const heroCostPerHour = document.getElementById('hero-cost-per-hour');
@@ -89,6 +89,24 @@
   const historyTableWrap = document.getElementById('history-table-wrap');
   const historyTableBody = document.getElementById('history-table-body');
   const btnToggleTable = document.getElementById('toggle-table-btn');
+
+  // DOM Elements - Gamification
+  const streakText = document.getElementById('streak-text');
+  const weeksTrackedLabel = document.getElementById('weeks-tracked-label');
+  const nextTargetLabel = document.getElementById('next-target-label');
+  const milestoneProgressFill = document.getElementById('milestone-progress-fill');
+  const streakEncouragement = document.getElementById('streak-encouragement');
+  const milestonesGrid = document.getElementById('milestones-grid');
+
+  // DOM Elements - Data Safety & Portability
+  const btnDownloadBackup = document.getElementById('download-backup-btn');
+  const inputRestoreFile = document.getElementById('restore-file-input');
+  const btnReminderIcs = document.getElementById('reminder-ics-btn');
+  const storageStatusMessage = document.getElementById('storage-status-message');
+  const btnClearAllData = document.getElementById('clear-all-data-btn');
+  const modalClearConfirm = document.getElementById('clear-confirm-modal');
+  const btnCancelClear = document.getElementById('cancel-clear-btn');
+  const btnConfirmClear = document.getElementById('confirm-clear-btn');
 
   // State
   let currentStep = 1;
@@ -129,7 +147,11 @@
     try {
       localStorage.setItem(STORAGE_KEY_V2, JSON.stringify(appData));
     } catch (err) {
-      // Storage unavailable or disabled
+      if (storageStatusMessage) {
+        storageStatusMessage.textContent = "Your numbers can't be saved on this browser.";
+        storageStatusMessage.className = 'type-body status-note error';
+        storageStatusMessage.classList.remove('hidden');
+      }
     }
   }
 
@@ -141,6 +163,7 @@
         if (parsed && parsed.version === 2) {
           Object.assign(appData, parsed);
           if (!Array.isArray(appData.checkIns)) appData.checkIns = [];
+          if (!appData.milestones) appData.milestones = { hasCalculated: false, hasProtectedRate: false, hasBackedUp: false };
           return true;
         }
       }
@@ -254,7 +277,9 @@
   function goToStep(step) {
     currentStep = step;
     stepIndicator.textContent = `Step ${step} of 3`;
-    progressFill.style.width = `${(step / 3) * 100}%`;
+    const pct = Math.round((step / 3) * 100);
+    stepPercent.textContent = `${pct}%`;
+    progressFill.style.width = `${pct}%`;
     flowHeading.textContent = stepTitles[step];
 
     step1Pane.classList.toggle('hidden', step !== 1);
@@ -325,6 +350,9 @@
     // Update History Chart and Table
     renderHistory();
 
+    // Update Gamification (Streak & Milestones)
+    renderGamification();
+
     // Mark milestone
     appData.milestones.hasCalculated = true;
     saveState();
@@ -365,6 +393,7 @@
     rateQuoteText.textContent = `Quote ₦${Math.round(needed).toLocaleString()} to take home ₦${Math.round(rate).toLocaleString()}/hr after fuel.`;
 
     btnCopyQuoteLine.disabled = false;
+    renderGamification();
   }
 
   function copyQuoteLine() {
@@ -585,6 +614,169 @@
     btnToggleTable.textContent = isHidden ? 'Hide table' : 'Show as table';
   }
 
+  // ==========================================================================
+  // Phase D: Gamification (Progress, Streak & Milestones)
+  // ==========================================================================
+  function renderGamification() {
+    const list = appData.checkIns || [];
+    const totalWeeks = list.length;
+    const currentWeek = getCurrentWeekIndex();
+    const weekIndexes = list.map(c => c.weekIndex);
+
+    // Compute Streak
+    const streak = currentStreak(weekIndexes, currentWeek);
+    streakText.textContent = `Current streak: ${streak} week${streak === 1 ? '' : 's'}`;
+
+    if (streak === 0 && totalWeeks > 0) {
+      streakEncouragement.textContent = `Pick it back up this week. Your ${totalWeeks} tracked week${totalWeeks === 1 ? '' : 's'} are still here.`;
+      streakEncouragement.classList.remove('hidden');
+    } else {
+      streakEncouragement.classList.add('hidden');
+    }
+
+    // Next Target Milestone
+    const nextTarget = nextMilestoneTarget(totalWeeks);
+    weeksTrackedLabel.textContent = `${totalWeeks} week${totalWeeks === 1 ? '' : 's'} tracked`;
+    nextTargetLabel.textContent = `Next milestone: ${nextTarget} weeks`;
+
+    const progressPct = Math.min(100, Math.round((totalWeeks / nextTarget) * 100));
+    milestoneProgressFill.style.width = `${progressPct}%`;
+
+    // Evaluate Milestones
+    const evaluated = evaluateMilestones(appData);
+    milestonesGrid.innerHTML = '';
+
+    const milestoneIcons = {
+      first_number: '⚡',
+      price_watcher: '📊',
+      rate_protector: '🛡️',
+      one_month_in: '🗓️',
+      quarter_tracked: '🎯',
+      backed_up: '💾'
+    };
+
+    for (const def of MILESTONE_DEFS) {
+      const isUnlocked = Boolean(evaluated[def.id]);
+      const card = document.createElement('div');
+      card.className = `milestone-badge-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+      card.setAttribute('role', 'article');
+      card.setAttribute('aria-label', `${def.title}: ${isUnlocked ? 'Unlocked' : 'Locked'}`);
+
+      card.innerHTML = `
+        <div class="milestone-icon-wrap" aria-hidden="true">${milestoneIcons[def.id] || '★'}</div>
+        <div class="milestone-badge-content">
+          <div class="milestone-title-row">
+            <span class="milestone-title">${def.title}</span>
+            <span class="milestone-status-tag">${isUnlocked ? 'Unlocked' : 'Locked'}</span>
+          </div>
+          <p class="milestone-desc">${def.desc}</p>
+        </div>
+      `;
+
+      milestonesGrid.appendChild(card);
+    }
+  }
+
+  // ==========================================================================
+  // Phase E: Data Safety & Portability
+  // ==========================================================================
+  function downloadBackup() {
+    const jsonStr = JSON.stringify(appData, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `fuelwise-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    appData.milestones.hasBackedUp = true;
+    saveState();
+    renderGamification();
+
+    if (storageStatusMessage) {
+      storageStatusMessage.textContent = 'Backup file downloaded successfully.';
+      storageStatusMessage.className = 'type-body status-note success';
+      storageStatusMessage.classList.remove('hidden');
+      setTimeout(() => storageStatusMessage.classList.add('hidden'), 4000);
+    }
+  }
+
+  function handleRestoreFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      try {
+        const parsed = JSON.parse(event.target.result);
+        const res = validateBackup(parsed);
+        if (!res.valid) {
+          if (storageStatusMessage) {
+            storageStatusMessage.textContent = `Restore failed: ${res.error}`;
+            storageStatusMessage.className = 'type-body status-note error';
+            storageStatusMessage.classList.remove('hidden');
+          }
+          return;
+        }
+
+        Object.assign(appData, parsed);
+        saveState();
+        renderResults();
+
+        if (storageStatusMessage) {
+          storageStatusMessage.textContent = 'Data successfully restored from backup file.';
+          storageStatusMessage.className = 'type-body status-note success';
+          storageStatusMessage.classList.remove('hidden');
+          setTimeout(() => storageStatusMessage.classList.add('hidden'), 4000);
+        }
+      } catch (err) {
+        if (storageStatusMessage) {
+          storageStatusMessage.textContent = 'Invalid JSON file. Please provide a valid Fuelwise backup.';
+          storageStatusMessage.className = 'type-body status-note error';
+          storageStatusMessage.classList.remove('hidden');
+        }
+      }
+    };
+    reader.readAsText(file);
+    inputRestoreFile.value = '';
+  }
+
+  function downloadCalendarReminder() {
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Fuelwise//Weekly Fuel Price Check//EN',
+      'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',
+      'SUMMARY:Update my fuel price in Fuelwise',
+      'DESCRIPTION:Fuel prices change often. Spend 10 seconds updating Fuelwise to keep your hourly freelance quote honest.',
+      'RRULE:FREQ=WEEKLY;BYDAY=MO',
+      'STATUS:CONFIRMED',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'fuelwise-weekly-reminder.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    if (storageStatusMessage) {
+      storageStatusMessage.textContent = 'Calendar reminder file (.ics) downloaded. Open it to add a weekly event.';
+      storageStatusMessage.className = 'type-body status-note success';
+      storageStatusMessage.classList.remove('hidden');
+      setTimeout(() => storageStatusMessage.classList.add('hidden'), 5000);
+    }
+  }
+
   function populateExample() {
     inputLitres.value = '1.5';
     inputHoursRun.value = '10';
@@ -605,7 +797,17 @@
     };
   }
 
-  function clearAllData() {
+  function openClearModal() {
+    modalClearConfirm.classList.remove('hidden');
+  }
+
+  function closeClearModal() {
+    modalClearConfirm.classList.add('hidden');
+  }
+
+  function performClearAllData() {
+    closeClearModal();
+
     inputLitres.value = '';
     inputHoursRun.value = '';
     inputDays.value = '';
@@ -616,7 +818,7 @@
     inputCheckinPrice.value = '';
 
     if (exampleNotice) exampleNotice.classList.add('hidden');
-    feedbackCheckin.classList.add('hidden');
+    if (feedbackCheckin) feedbackCheckin.classList.add('hidden');
 
     clearFieldError(inputLitres, errorLitres);
     clearFieldError(inputHoursRun, errorHoursRun);
@@ -679,8 +881,6 @@
 
   btnCopyQuoteLine.addEventListener('click', copyQuoteLine);
 
-  btnClear.addEventListener('click', clearAllData);
-
   // Check-In & History Event Listeners
   formCheckin.addEventListener('submit', handleCheckinSubmit);
 
@@ -692,6 +892,14 @@
   }
 
   btnToggleTable.addEventListener('click', toggleHistoryTable);
+
+  // Data Safety Event Listeners
+  btnDownloadBackup.addEventListener('click', downloadBackup);
+  inputRestoreFile.addEventListener('change', handleRestoreFile);
+  btnReminderIcs.addEventListener('click', downloadCalendarReminder);
+  btnClearAllData.addEventListener('click', openClearModal);
+  btnCancelClear.addEventListener('click', closeClearModal);
+  btnConfirmClear.addEventListener('click', performClearAllData);
 
   // Initialize on page load
   const hasLoaded = loadState();

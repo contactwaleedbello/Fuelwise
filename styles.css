@@ -1,7 +1,7 @@
 /* ==========================================================================
-   Fuelwise Design System & Styles (Phase B)
-   Built mobile-first with Vanilla CSS.
-   Uses the Rule of Eights, Material Design breakpoints, and WCAG AA compliance.
+   Fuelwise Design System & Styles
+   Inspired by BeUI, UI Arc, and Kinetics.
+   WCAG AA compliant, mobile-first, zero-dependency.
    ========================================================================== */
 
 :root {
@@ -14,64 +14,71 @@
   --space-6: 48px;
   --space-8: 64px;
 
-  /* Material Design Breakpoints Reference */
+  /* Layout Widths */
   --bp-compact: 0px;
   --bp-medium: 600px;
   --bp-expanded: 840px;
   --max-content-width: 880px;
 
-  /* Touch Target Standard */
+  /* Touch Targets */
   --touch-target-min: 48px;
 
-  /* Semantic Type Roles (rem based, body >= 16px) */
+  /* Typography Scales */
   --type-display: 2.25rem;   /* 36px on compact */
   --type-headline: 1.75rem;  /* 28px on compact */
   --type-title: 1.25rem;     /* 20px on compact */
   --type-body: 1rem;         /* 16px */
   --type-label: 1rem;        /* 16px */
 
-  /* Light Theme Palette (Calm slate with deep emerald accent) */
+  /* Light Theme Palette (Fuel Amber & Deep Navy) */
   --bg-page: #f8fafc;
   --bg-card: #ffffff;
   --bg-subtle: #f1f5f9;
-  --text-primary: #0f172a;   /* 17.85:1 on card, 17.06:1 on page */
-  --text-secondary: #334155; /* 10.35:1 on card, 9.90:1 on page */
-  --text-helper: #334155;    /* 10.35:1 on card */
-  --accent: #065f46;          /* 7.68:1 on card */
-  --accent-hover: #044e39;
-  --accent-contrast: #ffffff;/* 7.68:1 on accent */
-  --border-color: #cbd5e1;
-  --border-focus: #065f46;
+  --text-primary: #0b1b2b;   /* 17.20:1 on card */
+  --text-secondary: #374151; /* 9.53:1 on card */
+  --text-helper: #4b5563;    /* 7.02:1 on card */
+  --accent: #b45309;          /* 5.02:1 on card (Passes WCAG AA) */
+  --accent-hover: #92400e;
+  --accent-contrast: #ffffff;/* 5.02:1 on accent */
+  --mint-accent: #0d766e;    /* 5.45:1 on card */
+  --border-color: #e2e8f0;
+  --border-focus: #b45309;
   --slider-track: #e2e8f0;
   --error-text: #b91c1c;     /* 6.47:1 on card */
-  --badge-bg: #ecfdf5;
-  --badge-text: #065f46;     /* 7.29:1 on badge-bg */
-  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
-  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
+  --badge-bg: #fef3c7;
+  --badge-text: #92400e;     /* 7.18:1 on badge-bg */
+  --mint-badge-bg: #ccfbf1;
+  --mint-badge-text: #0f766e;/* 5.10:1 on mint-badge-bg */
+  --shadow-sm: 0 1px 3px rgba(11, 27, 43, 0.06), 0 1px 2px rgba(11, 27, 43, 0.04);
+  --shadow-md: 0 4px 12px rgba(11, 27, 43, 0.08), 0 1px 3px rgba(11, 27, 43, 0.04);
   --radius-sm: 8px;
   --radius-md: 16px;
+  --radius-full: 9999px;
 }
 
-/* Dark Theme Palette (WCAG AA Compliant) */
+/* Dark Theme Palette (Obsidian & Electric Amber) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-page: #0b1120;
-    --bg-card: #1e293b;
-    --bg-subtle: #0f172a;
-    --text-primary: #f8fafc;   /* 13.98:1 on card, 18.00:1 on page */
-    --text-secondary: #cbd5e1; /* 9.85:1 on card, 12.68:1 on page */
-    --text-helper: #94a3b8;    /* 5.71:1 on card, 7.34:1 on page */
-    --accent: #34d399;          /* 7.61:1 on card */
-    --accent-hover: #10b981;
-    --accent-contrast: #0b1120;/* 9.79:1 on accent */
-    --border-color: #334155;
-    --border-focus: #34d399;
-    --slider-track: #334155;
+    --bg-page: #161719;        /* Matches darkmode logo background */
+    --bg-card: #1e2024;
+    --bg-subtle: #141517;
+    --text-primary: #f8fafc;   /* 13.52:1 on card */
+    --text-secondary: #cbd5e1; /* 9.85:1 on card */
+    --text-helper: #9ca3af;    /* 5.68:1 on card */
+    --accent: #ffa500;          /* 9.62:1 on card */
+    --accent-hover: #ffb733;
+    --accent-contrast: #161719;/* 9.62:1 on accent */
+    --mint-accent: #2dd4bf;    /* 8.78:1 on card */
+    --border-color: rgba(255, 255, 255, 0.09);
+    --border-focus: #ffa500;
+    --slider-track: #2d3139;
     --error-text: #fca5a5;     /* 7.71:1 on card */
-    --badge-bg: #064e3b;
-    --badge-text: #a7f3d0;     /* 7.58:1 on badge-bg */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --badge-bg: #451a03;
+    --badge-text: #fcd34d;     /* 8.12:1 on badge-bg */
+    --mint-badge-bg: #042f2e;
+    --mint-badge-text: #5eead4;/* 8.44:1 on mint-badge-bg */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.5);
   }
 }
 
@@ -98,6 +105,7 @@ body {
   background-color: var(--bg-page);
   min-height: 100vh;
   padding: var(--space-3) 0 var(--space-6) 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .sr-only {
@@ -164,20 +172,39 @@ body {
 .header-content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
+}
+
+.brand-bar {
+  display: flex;
+  align-items: center;
+}
+
+.brand-picture {
+  display: inline-block;
+  line-height: 0;
+}
+
+.brand-logo {
+  height: 48px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
+  display: block;
 }
 
 .header-subtitle {
-  max-width: 600px;
+  max-width: 620px;
 }
 
-/* Panels */
+/* Panels (BeUI Tactile Surface) */
 .panel {
   background-color: var(--bg-card);
   border-radius: var(--radius-md);
   padding: var(--space-3);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 /* ==========================================================================
@@ -195,6 +222,12 @@ body {
   gap: var(--space-1);
 }
 
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .step-indicator {
   font-size: 0.875rem;
   text-transform: uppercase;
@@ -202,18 +235,23 @@ body {
   color: var(--accent);
 }
 
+.progress-percent {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
 .progress-bar-track {
   width: 100%;
   height: 8px;
   background-color: var(--slider-track);
-  border-radius: 4px;
+  border-radius: var(--radius-full);
   overflow: hidden;
 }
 
 .progress-bar-fill {
   height: 100%;
   background-color: var(--accent);
-  border-radius: 4px;
+  border-radius: var(--radius-full);
   transition: width 0.3s ease;
 }
 
@@ -252,12 +290,12 @@ body {
 .form-group input:focus-visible {
   outline: none;
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(6, 95, 70, 0.2);
+  box-shadow: 0 0 0 3px rgba(194, 94, 0, 0.2);
 }
 
 @media (prefers-color-scheme: dark) {
   .form-group input:focus-visible {
-    box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.25);
+    box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.25);
   }
 }
 
@@ -287,7 +325,7 @@ body {
   margin-top: var(--space-1);
 }
 
-/* Buttons (All touch targets >= 48px) */
+/* Buttons (Kinetics Tactile Depressions) */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -297,8 +335,13 @@ body {
   border-radius: var(--radius-sm);
   cursor: pointer;
   border: 2px solid transparent;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
   text-decoration: none;
+  user-select: none;
+}
+
+.btn:active {
+  transform: scale(0.98);
 }
 
 .btn:focus-visible {
@@ -345,6 +388,16 @@ body {
   color: var(--text-primary);
 }
 
+.btn-danger {
+  background-color: var(--error-text);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.btn-danger:hover {
+  opacity: 0.9;
+}
+
 .btn-text {
   background: none;
   border: none;
@@ -377,7 +430,6 @@ body {
 
 /* ==========================================================================
    Journey 2: Result Screen ("Today")
-   Hero number is central
    ========================================================================== */
 .results-screen {
   display: flex;
@@ -385,12 +437,13 @@ body {
   gap: var(--space-3);
 }
 
-/* Hero Card */
+/* Hero Card (Bold Accent Border & Tabular Display) */
 .hero-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
   border-left: 6px solid var(--accent);
+  box-shadow: var(--shadow-md);
 }
 
 .hero-top {
@@ -424,6 +477,7 @@ body {
 .hero-number {
   font-size: var(--type-display);
   color: var(--accent);
+  font-weight: 800;
 }
 
 .hero-explanation {
@@ -441,6 +495,11 @@ body {
 
 .card-title {
   color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.card-description {
+  color: var(--text-secondary);
   margin-bottom: var(--space-2);
 }
 
@@ -507,7 +566,7 @@ input[type="range"]:focus-visible {
 input[type="range"]::-webkit-slider-runnable-track {
   height: 8px;
   background-color: var(--slider-track);
-  border-radius: 4px;
+  border-radius: var(--radius-full);
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -524,13 +583,13 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 input[type="range"]:active::-webkit-slider-thumb {
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 input[type="range"]::-moz-range-track {
   height: 8px;
   background-color: var(--slider-track);
-  border-radius: 4px;
+  border-radius: var(--radius-full);
 }
 
 input[type="range"]::-moz-range-thumb {
@@ -557,15 +616,54 @@ input[type="range"]::-moz-range-thumb {
   font-size: 1.25rem;
 }
 
-/* Protect Your Rate Card */
+/* ==========================================================================
+   Journey 3: Weekly Check-In Card
+   ========================================================================== */
+.checkin-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.checkin-input-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.checkin-field {
+  flex: 1 1 200px;
+}
+
+.checkin-feedback {
+  background-color: var(--bg-subtle);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  margin-top: var(--space-2);
+}
+
+.feedback-icon {
+  color: var(--accent);
+}
+
+.feedback-text {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Protect Your Rate Card
+   ========================================================================== */
 .rate-protection-card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-}
-
-.card-description {
-  color: var(--text-secondary);
+  gap: var(--space-1);
 }
 
 .rate-input-group {
@@ -603,58 +701,17 @@ input[type="range"]::-moz-range-thumb {
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-2);
-  margin-top: var(--space-1);
+  margin-top: var(--space-2);
 }
 
 .copy-toast {
-  background-color: var(--badge-bg);
-  color: var(--badge-text);
+  background-color: var(--mint-badge-bg);
+  color: var(--mint-badge-text);
   padding: var(--space-half) var(--space-2);
   border-radius: var(--radius-sm);
   font-size: 0.875rem;
   font-weight: 600;
   transition: opacity 0.2s ease;
-}
-
-/* ==========================================================================
-   Journey 3: Weekly Check-In Card
-   ========================================================================== */
-.checkin-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.checkin-input-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--space-2);
-  margin-top: var(--space-1);
-}
-
-.checkin-field {
-  flex: 1 1 200px;
-}
-
-.checkin-feedback {
-  background-color: var(--bg-subtle);
-  border-left: 4px solid var(--accent);
-  border-radius: var(--radius-sm);
-  padding: var(--space-2);
-  display: flex;
-  gap: var(--space-1);
-  align-items: center;
-  margin-top: var(--space-1);
-}
-
-.feedback-icon {
-  color: var(--accent);
-}
-
-.feedback-text {
-  color: var(--text-primary);
-  font-weight: 500;
 }
 
 /* ==========================================================================
@@ -747,6 +804,185 @@ input[type="range"]::-moz-range-thumb {
   color: var(--text-secondary);
 }
 
+/* ==========================================================================
+   Phase D: Gamification (Progress, Streak & Milestones)
+   ========================================================================== */
+.progress-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  grid-column: 1 / -1;
+}
+
+.progress-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.streak-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-half);
+  background-color: var(--badge-bg);
+  color: var(--badge-text);
+  padding: var(--space-half) var(--space-2);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.streak-fire {
+  font-size: 1rem;
+}
+
+.milestone-progress-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.milestone-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.streak-note {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: var(--space-half);
+}
+
+.milestones-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+
+.milestone-badge-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-subtle);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.milestone-badge-card.unlocked {
+  border-color: var(--accent);
+  background-color: var(--bg-card);
+}
+
+.milestone-badge-card.locked {
+  opacity: 0.65;
+}
+
+.milestone-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.milestone-badge-card.unlocked .milestone-icon-wrap {
+  background-color: var(--badge-bg);
+  border-color: var(--accent);
+  color: var(--badge-text);
+}
+
+.milestone-badge-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.milestone-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.milestone-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+}
+
+.milestone-status-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+}
+
+.milestone-badge-card.unlocked .milestone-status-tag {
+  background-color: var(--mint-badge-bg);
+  color: var(--mint-badge-text);
+}
+
+.milestone-badge-card.locked .milestone-status-tag {
+  background-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.milestone-desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   Phase E: Data Safety & Portability Panel
+   ========================================================================== */
+.data-safety-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  grid-column: 1 / -1;
+}
+
+.data-actions-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.file-upload-label {
+  cursor: pointer;
+}
+
+.status-note {
+  font-size: 0.875rem;
+  margin-top: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-subtle);
+}
+
+.status-note.error {
+  color: var(--error-text);
+  border: 1px solid var(--error-text);
+}
+
+.status-note.success {
+  color: var(--mint-accent);
+}
+
 /* Footer */
 .app-footer {
   margin-top: var(--space-6);
@@ -769,6 +1005,37 @@ input[type="range"]::-moz-range-thumb {
   color: var(--text-secondary);
 }
 
+/* Modal Backdrop & Confirm Box */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  z-index: 1000;
+}
+
+.modal-card {
+  max-width: 440px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  box-shadow: var(--shadow-md);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
 /* ==========================================================================
    Responsive Breakpoints (Material Design window size classes)
    ========================================================================== */
@@ -789,6 +1056,10 @@ input[type="range"]::-moz-range-thumb {
 
   .rate-protection-card {
     grid-column: span 2;
+  }
+
+  .milestones-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -819,6 +1090,10 @@ input[type="range"]::-moz-range-thumb {
 
   .rate-protection-card {
     grid-column: span 2;
+  }
+
+  .milestones-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
