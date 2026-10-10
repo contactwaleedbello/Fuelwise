@@ -37,6 +37,39 @@ function checkInChange(previousCostPerHour, currentCostPerHour) {
   return { diff, percent };
 }
 
+function currentStreak(weekIndexes, currentWeekIndex) {
+  if (!Array.isArray(weekIndexes) || weekIndexes.length === 0) return 0;
+
+  const uniqueWeeks = Array.from(new Set(weekIndexes.map(Number)))
+    .filter(n => !Number.isNaN(n))
+    .sort((a, b) => a - b);
+
+  if (uniqueWeeks.length === 0) return 0;
+
+  const latestWeek = uniqueWeeks[uniqueWeeks.length - 1];
+
+  if (latestWeek !== currentWeekIndex && latestWeek !== currentWeekIndex - 1) {
+    return 0;
+  }
+
+  let count = 1;
+  let hasForgivenGap = false;
+
+  for (let i = uniqueWeeks.length - 1; i > 0; i--) {
+    const diff = uniqueWeeks[i] - uniqueWeeks[i - 1];
+    if (diff === 1) {
+      count++;
+    } else if (diff === 2 && !hasForgivenGap) {
+      hasForgivenGap = true;
+      count++;
+    } else {
+      break;
+    }
+  }
+
+  return count;
+}
+
 function validate(inputs) {
   const errors = [];
   const fields = [
@@ -85,6 +118,7 @@ if (typeof module !== 'undefined' && module.exports) {
     powerShare,
     neededQuote,
     checkInChange,
+    currentStreak,
     validate
   };
 }
