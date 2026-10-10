@@ -108,6 +108,42 @@
   const btnCancelClear = document.getElementById('cancel-clear-btn');
   const btnConfirmClear = document.getElementById('confirm-clear-btn');
 
+  // DOM Elements - Theme Toggle
+  const btnThemeToggle = document.getElementById('theme-toggle-btn');
+  const iconMoon = document.getElementById('icon-moon');
+  const iconSun = document.getElementById('icon-sun');
+  const themeToggleText = document.getElementById('theme-toggle-text');
+
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      if (iconMoon) iconMoon.classList.add('hidden');
+      if (iconSun) iconSun.classList.remove('hidden');
+      if (themeToggleText) themeToggleText.textContent = 'Light mode';
+      if (btnThemeToggle) btnThemeToggle.setAttribute('aria-label', 'Switch to light theme');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      if (iconMoon) iconMoon.classList.remove('hidden');
+      if (iconSun) iconSun.classList.add('hidden');
+      if (themeToggleText) themeToggleText.textContent = 'Dark mode';
+      if (btnThemeToggle) btnThemeToggle.setAttribute('aria-label', 'Switch to dark theme');
+    }
+    try {
+      localStorage.setItem('fuelwise:theme', theme);
+    } catch (err) {}
+  }
+
+  function initTheme() {
+    let activeTheme = 'light'; // Light mode is default
+    try {
+      const saved = localStorage.getItem('fuelwise:theme');
+      if (saved === 'dark') {
+        activeTheme = 'dark';
+      }
+    } catch (err) {}
+    applyTheme(activeTheme);
+  }
+
   // State
   let currentStep = 1;
   let baseCostPerHour = 0;
@@ -900,6 +936,16 @@
   btnClearAllData.addEventListener('click', openClearModal);
   btnCancelClear.addEventListener('click', closeClearModal);
   btnConfirmClear.addEventListener('click', performClearAllData);
+
+  if (btnThemeToggle) {
+    btnThemeToggle.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      applyTheme(isDark ? 'light' : 'dark');
+    });
+  }
+
+  // Initialize theme (default: light)
+  initTheme();
 
   // Initialize on page load
   const hasLoaded = loadState();
